@@ -10,6 +10,7 @@ ENV IIPSRV_COMMIT   "61bfa65d686fd0c0242a3c0b183ef77fef7364a8"
 ENV FPM_VERSION     "1.10.2"
 ENV RUBY_VERSION    "2.6.3"
 ENV KAKADU_VERSION  "v7_5-01574L"
+ENV ARCHITECTURE    "Linux-x86-64"
 
 # Install packages
 RUN yum install -y \
@@ -44,5 +45,11 @@ RUN /bin/bash -l -c "gem install fpm -v ${FPM_VERSION}"
 RUN git clone ${IIPSRV_REPO} /root/iipsrv && cd /root/iipsrv && git checkout ${IIPSRV_COMMIT}
 # Copy over Kakadu
 ADD "kakadu/${KAKADU_VERSION}" /root/kakadu
-# Disable MaxV2
-RUN cd /root/kakadu && sed -i '/AVX2FLAGS = -mavx2 -mfma/ s/^#*/#/' */make/Makefile-Linux-x86-64-gcc
+# Disable AVX2
+RUN cd /root/kakadu && sed -i '/AVX2FLAGS = -mavx2 -mfma/ s/^#*/#/' */make/Makefile-${ARCHITECTURE}-gcc
+RUN cd /root/kakadu && sed -i '/#C_OPT += -DKDU_NO_AVX2/ s/^#//' */make/Makefile-${ARCHITECTURE}-gcc
+# Disable SSSE3
+RUN cd /root/kakadu && sed -i '/SSSE3FLAGS = -mssse3/ s/^#*/#/' */make/Makefile-${ARCHITECTURE}-gcc
+RUN cd /root/kakadu && sed -i '/#C_OPT += -DKDU_NO_SSSE3/ s/^#//' */make/Makefile-${ARCHITECTURE}-gcc
+# Compile Kakadu
+RUN cd /root/kakadu/make; export JAVA_HOME=/usr/lib/jvm/java; make -f Makefile-${ARCHITECTURE}-gcc
