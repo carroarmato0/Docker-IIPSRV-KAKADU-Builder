@@ -1,0 +1,30 @@
+# It's not recommended to modify this file in-place, because it will be
+# overwritten during package upgrades.  If you want to customize, the
+# best way is to create a file "/etc/systemd/system/iipsrv.service",
+# containing
+#	.include /lib/systemd/system/iipsrv.service
+#	...make your changes here...
+# For more info about custom unit files, see
+# http://fedoraproject.org/wiki/Systemd#How_do_I_customize_a_unit_file.2F_add_a_custom_unit_file.3F
+
+# For example, if you want to change default iipsrv port to 9000,
+# create a file named "/etc/systemd/system/iipsrv.service" containing:
+#	.include /lib/systemd/system/iipsrv.service
+#	[Service]
+#	Environment=PORT=9000
+
+
+[Unit]
+Description=IIPImage Server
+After=network.target
+
+[Service]
+Environment=IP=127.0.0.1
+Environment=PORT=9002
+Environment=LOGFILE=/var/log/iipsrv/iipsrv.log
+Environment=VERBOSITY=1
+User=iipsrv
+ExecStart=/usr/libexec/iipsrv/iipsrv.fcgi --bind ${IP}:${PORT}
+
+[Install]
+WantedBy=multi-user.target

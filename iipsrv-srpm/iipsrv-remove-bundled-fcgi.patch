@@ -1,0 +1,27 @@
+diff -up iipsrv-iipsrv-1.0/configure.ac.patch iipsrv-iipsrv-1.0/configure.ac
+--- iipsrv-iipsrv-1.0/configure.ac.patch	2016-05-05 09:23:19.555849298 +0200
++++ iipsrv-iipsrv-1.0/configure.ac	2016-05-05 09:24:04.649846813 +0200
+@@ -334,10 +334,7 @@ AC_SUBST(LIBS)
+ AC_PROG_MAKE_SET
+ AC_CONFIG_FILES([Makefile \
+ 	src/Makefile \
+-	man/Makefile \
+-	fcgi/Makefile \
+-	fcgi/include/Makefile \
+-	fcgi/libfcgi/Makefile])
++	man/Makefile])
+ AC_OUTPUT
+ 
+ # Print out option status
+diff -up iipsrv-iipsrv-1.0/Makefile.am.patch iipsrv-iipsrv-1.0/Makefile.am
+--- iipsrv-iipsrv-1.0/Makefile.am.patch	2016-05-05 09:23:02.026850264 +0200
++++ iipsrv-iipsrv-1.0/Makefile.am	2016-05-05 09:23:12.513849686 +0200
+@@ -1,6 +1,6 @@
+ AUTOMAKE_OPTIONS = dist-bzip2
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-SUBDIRS = fcgi src man
++SUBDIRS = src man
+ 
+-EXTRA_DIST = TODO COPYING.FCGI doc windows
++EXTRA_DIST = TODO doc windows

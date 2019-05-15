@@ -13,6 +13,9 @@ ENV KAKADU_VERSION      "v7_5-01574L"
 ENV KAKADU_PKG_VERSION  "7.5.01574-1"
 ENV ARCHITECTURE        "Linux-x86-64"
 
+# Add EPEL
+RUN yum install -y epel-release
+
 # Install packages
 RUN yum install -y \
     git \
@@ -39,7 +42,11 @@ RUN yum install -y \
     libjpeg-turbo-devel \
     libpng-devel \
     libtiff-devel \
-    zlib-devel
+    zlib-devel \
+    rpmdevtools \
+    fcgi-devel \
+    lcms2-devel \
+    selinux-policy-devel
 
 
 # Install RVM
@@ -48,8 +55,6 @@ RUN curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - && curl -sSL https://r
 RUN /bin/bash -l -c "rvm reload && rvm requirements run && rvm install ${RUBY_VERSION} && rvm use ${RUBY_VERSION} --default"
 # Install FPM
 RUN /bin/bash -l -c "gem install fpm -v ${FPM_VERSION}"
-# Pull IIPSRV
-RUN git clone ${IIPSRV_REPO} /root/iipsrv && cd /root/iipsrv && git checkout ${IIPSRV_COMMIT}
 # Copy over Kakadu
 ADD "kakadu/${KAKADU_VERSION}" /usr/share/kakadu
 # Disable AVX2
@@ -62,3 +67,16 @@ RUN cd /usr/share/kakadu && sed -i '/#C_OPT += -DKDU_NO_SSSE3/ s/^#//' */make/Ma
 RUN cd /usr/share/kakadu/make; export JAVA_HOME=/usr/lib/jvm/java; make -f Makefile-${ARCHITECTURE}-gcc
 # Package Kakadu
 RUN /bin/bash -l -c "fpm -s dir -t rpm -n kakadu -v ${KAKADU_PKG_VERSION} -d java-1.7.0-openjdk --provides '/usr/share/kakadu/apps/make/libkdu_v75R.so()(64bit)' --description \"Kakadu SDK with License. Compiled without SSE3 and AVX2, using Java OpenJDK 1.7.0\" /usr/share/kakadu/ /usr/share/java/kdu_jni/"
+
+# Pull IIPSRV
+RUN git clone ${IIPSRV_REPO} /root/iipsrv-iipsrv-1.0 && cd /root/iipsrv-iipsrv-1.0 && git checkout ${IIPSRV_COMMIT}
+# Copy over SRPM content
+ADD "iipsrv-srpm" /root/iipsrv-srpm/
+# Compress iipsrv git content to tar.gz
+RUN tar -C /root/ -czvf /root/iipsrv-srpm/iipsrv-1.0.tar.gz --exclude-vcs iipsrv-iipsrv-1.0
+# Create rpm building environment
+RUN rpmdev-setuptree
+# Copy things into place
+RUN mv /root/iipsrv-srpm/*.spec /root/rpmbuild/SPECS; mv /root/iipsrv-srpm/* /root/rpmbuild/SOURCES/
+# Compile and build IIPSRV package
+RUN cd /root/rpmbuild; rpmbuild -ba SPECS/iipsrv.spec
