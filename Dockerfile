@@ -78,6 +78,6 @@ RUN tar -C /root/ -czvf /root/iipsrv-srpm/iipsrv-1.0.tar.gz --exclude-vcs iipsrv
 # Create rpm building environment
 RUN rpmdev-setuptree
 # Copy things into place
-RUN mv /root/iipsrv-srpm/*.spec /root/rpmbuild/SPECS; mv /root/iipsrv-srpm/*.readme /root/rpmbuild/SOURCES/; mv /root/iipsrv-srpm/* /root/rpmbuild/SOURCES/
+RUN mv /root/iipsrv-srpm/*.spec /root/rpmbuild/SPECS; mv /root/iipsrv-srpm/* /root/rpmbuild/SOURCES/
 # Compile and build IIPSRV package
 RUN cd /root/rpmbuild; rpmbuild -ba SPECS/iipsrv.spec
