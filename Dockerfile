@@ -1,5 +1,5 @@
 # Base container
-FROM centos:6.8
+FROM centos:7.9.2009
 
 # Administration
 LABEL maintainer="carroarmato0@inuits.eu"
@@ -46,7 +46,8 @@ RUN yum install -y \
     rpmdevtools \
     fcgi-devel \
     lcms2-devel \
-    selinux-policy-devel
+    selinux-policy-devel \
+    which
 
 
 # Install RVM
