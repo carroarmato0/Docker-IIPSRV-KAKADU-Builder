@@ -67,7 +67,7 @@ RUN cd /usr/share/kakadu && sed -i '/#C_OPT += -DKDU_NO_SSSE3/ s/^#//' */make/Ma
 # Compile Kakadu
 RUN cd /usr/share/kakadu/make; export JAVA_HOME=/usr/lib/jvm/java; make -f Makefile-${ARCHITECTURE}-gcc
 # Package Kakadu
-RUN /bin/bash -l -c "fpm -s dir -t rpm -n kakadu -v ${KAKADU_PKG_VERSION} -d java-1.7.0-openjdk --provides '/usr/share/kakadu/apps/make/libkdu_v75R.so()(64bit)' --description \"Kakadu SDK with License. Compiled without SSE3 and AVX2, using Java OpenJDK 1.7.0\" /usr/share/kakadu/ /usr/share/java/kdu_jni/"
+RUN /bin/bash -l -c "fpm -s dir -t rpm -n kakadu -v ${KAKADU_PKG_VERSION} -d java-1.7.0-openjdk --provides 'libkdu_v75R.so()(64bit)' --description \"Kakadu SDK with License. Compiled without SSE3 and AVX2, using Java OpenJDK 1.7.0\" /usr/share/kakadu/ /usr/share/java/kdu_jni/"
 
 # Pull IIPSRV
 RUN git clone ${IIPSRV_REPO} /root/iipsrv-iipsrv-1.0 && cd /root/iipsrv-iipsrv-1.0 && git checkout ${IIPSRV_COMMIT}
